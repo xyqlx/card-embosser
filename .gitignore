@@ -1,18 +1,26 @@
 /cert
 
 # compiled output
-/backend/dist
-/backend/node_modules
+dist
+node_modules
 /backend/build
+/frontend/build
+dist-ssr
+coverage
+*.local
+/frontend/cypress/videos/
+/frontend/cypress/screenshots/
 
 # Logs
 /backend/logs
+/frontend/logs
 *.log
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
 
 # OS
 .DS_Store
