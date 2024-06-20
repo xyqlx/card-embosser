@@ -29,6 +29,9 @@ services:
     volumes:
       - ./backend:/usr/src/backend
       - /usr/src/backend/node_modules
+    # for debugging
+    ports:
+      - 12380:80
 
   db:
     image: mongodb/mongodb-community-server:7.0.9-ubuntu2204
@@ -38,3 +41,6 @@ services:
     volumes:
       - ./mongo/mongod.conf:/etc/mongod.conf
       - ./mongo/data:/data/db
+    # for debugging
+    ports:
+      - 29017:27017

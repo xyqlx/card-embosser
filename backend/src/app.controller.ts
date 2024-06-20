@@ -11,9 +11,9 @@ export class AppController {
   }
 
   // catch all route
-  @Get('*')
-  getHelloCatchAll(@Req() request: Request): string {
-    // get the request route
-    return 'request to ' + request.url;
-  }
+  // @Get('*')
+  // getHelloCatchAll(@Req() request: Request): string {
+  //   // get the request route
+  //   return 'request to ' + request.url;
+  // }
 }

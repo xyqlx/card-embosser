@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       // if authSource is not specified, there will be no user@database
       authSource: 'admin',
     }),
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
