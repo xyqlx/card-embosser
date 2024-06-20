@@ -21,17 +21,20 @@ services:
   backend:
     build: ./backend
     command: npm run start:dev
-    # environment:
-    #   - DB_HOST=db
-    # depends_on:
-    #   - db
+    depends_on:
+      - db
+    environment:
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
     volumes:
       - ./backend:/usr/src/backend
       - /usr/src/backend/node_modules
 
-  # db:
-  #   image: postgres
-  #   environment:
-  #     - POSTGRES_DB=appdb
-  #     - POSTGRES_USER=appuser
-  #     - POSTGRES_PASSWORD=apppass
+  db:
+    image: mongodb/mongodb-community-server:7.0.9-ubuntu2204
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGODB_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - ./mongo/mongod.conf:/etc/mongod.conf
+      - ./mongo/data:/data/db
