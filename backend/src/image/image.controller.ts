@@ -78,24 +78,25 @@ export class ImageController {
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'image', maxCount: 1 },
-      { name: 'thumbnail', maxCount: 1 },
+      { name: 'image', maxCount: 1024 },
+      { name: 'thumbnail', maxCount: 1024 },
     ]),
   )
-  create(
+  async create(
     @UploadedFiles()
     files: {
       image: Express.Multer.File[];
       thumbnail: Express.Multer.File[];
     },
   ) {
-    const image = files.image ? files.image[0] : null;
-    const thumbnail = files.thumbnail ? files.thumbnail[0] : null;
-    // check if files are present
-    if (!image || !thumbnail) {
-      throw new Error('Image or thumbnail not found');
+    const images = files.image;
+    const thumbnails = files.thumbnail;
+    if (images.length !== thumbnails.length) {
+      throw new Error('Image and thumbnail count mismatch');
     }
     // save images
-    return this.imageService.create(image, thumbnail);
+    return Promise.all(
+      images.map((v, i) => this.imageService.create(v, thumbnails[i])),
+    );
   }
 }

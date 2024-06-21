@@ -5,8 +5,8 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header>
     <nav>
-      <RouterLink to="/upload">Upload</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
+      <RouterLink to="/upload">图片录入</RouterLink>
+      <RouterLink to="/about">关于本站</RouterLink>
     </nav>
   </header>
   <RouterView />
