@@ -36,7 +36,7 @@ async function compressImage(file: File, maxSize: number) {
   return await compress(file, { width: newWidth, height: newHeight, quality: 0.7, type: EImageType.JPEG });
 }
 
-function upload($event: Event) {
+async function upload($event: Event) {
   const files = ($event.target as any)?.files as (FileList | null); // 获取选择的文件
   if (!files || files.length === 0) {
     return;
