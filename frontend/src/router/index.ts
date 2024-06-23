@@ -1,3 +1,4 @@
+import LabelView from '@/views/LabelView.vue'
 import UploadView from '@/views/UploadView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -12,6 +13,11 @@ const router = createRouter({
       path: '/upload',
       name: 'upload',
       component: UploadView
+    },
+    {
+      path: '/label',
+      name: 'label',
+      component: LabelView
     },
     {
       path: '/about',

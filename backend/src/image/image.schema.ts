@@ -8,11 +8,11 @@ export class ItemImage {
   @Prop({ required: true })
   contentType: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   data: Buffer;
 
   // thumbnail is a smaller version of the image using jpeg format
-  @Prop({ required: true })
+  @Prop({ required: false })
   thumbnail: Buffer;
 
   @Prop({ default: true })

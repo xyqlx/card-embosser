@@ -13,8 +13,7 @@ services:
     build: ./frontend
     command: npm run dev
     volumes:
-      - ./frontend:/usr/src/frontend
-      - /usr/src/frontend/node_modules
+      - ./frontend/src:/usr/src/frontend/src
     depends_on:
       - backend
 
@@ -27,8 +26,7 @@ services:
       MONGO_USER: ${MONGO_USER}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
     volumes:
-      - ./backend:/usr/src/backend
-      - /usr/src/backend/node_modules
+      - ./backend/src:/usr/src/backend/src
     # for debugging
     ports:
       - 12380:80

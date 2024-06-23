@@ -19,22 +19,20 @@ export class ImageController {
 
   @Get('thumbnail/:id')
   async findThumbnail(@Param('id') id: string, @Res() res: Response) {
-    const image = await this.imageService.findOne(id);
+    const image = await this.imageService.findOneFull(id);
     const thumbnailData = image.thumbnail;
     const contentType = 'image/jpeg';
-    const file = createReadStream(thumbnailData);
     res.setHeader('Content-Type', contentType);
-    file.pipe(res);
+    res.write(thumbnailData);
   }
 
   @Get(':id')
   async findImage(@Param('id') id: string, @Res() res: Response) {
-    const image = await this.imageService.findOne(id);
+    const image = await this.imageService.findOneFull(id);
     const imageData = image.data;
     const contentType = image.contentType;
-    const file = createReadStream(imageData);
     res.setHeader('Content-Type', contentType);
-    file.pipe(res);
+    res.write(imageData);
   }
 
   @Get('used/:id')

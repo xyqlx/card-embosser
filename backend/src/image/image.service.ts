@@ -26,10 +26,14 @@ export class ImageService {
   }
 
   async findAll(): Promise<ItemImage[]> {
-    return this.imageModel.find().exec();
+    return this.imageModel.find().select('-data').select('-thumbnail').exec();
   }
 
   async findOne(id: string): Promise<ItemImage> {
+    return this.imageModel.findById(id).select('-data').select('-thumbnail');
+  }
+
+  async findOneFull(id: string): Promise<ItemImage> {
     return this.imageModel.findById(id);
   }
 
@@ -40,6 +44,8 @@ export class ImageService {
   async getUnused(count: number, asc: boolean): Promise<ItemImage[]> {
     return this.imageModel
       .find({ used: false })
+      .select('-data')
+      .select('-thumbnail')
       .sort({ _id: asc ? 1 : -1 })
       .limit(count)
       .exec();
