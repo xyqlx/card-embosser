@@ -66,10 +66,14 @@ function deleteImages() {
   });
 }
 
+const isLoading = ref(false);
+
 async function fetchImages() {
+  isLoading.value = true;
   const response = await fetch(`/api/image/unused/desc/${maxImageNumber}`);
   const data = await response.json();
   imageIds.value = data.map((document: any) => document._id);
+  isLoading.value = false;
 }
 
 onMounted(async () => {
@@ -79,9 +83,6 @@ onMounted(async () => {
 
 <template>
   <div class="main-container">
-    <div v-if="imageIds.length === 0" class="empty-tips">
-      <h1>没有未使用的图片</h1>
-    </div>
     <div class="images-container">
       <div v-for="imageId of imageIds" :key="imageId" class="image-container"
         :class="selectedImageIds.includes(imageId) ? 'selected' : ''">
@@ -89,12 +90,12 @@ onMounted(async () => {
         <div class="mask"></div>
       </div>
     </div>
-    <div class="control-container">
+    <div v-show="!isLoading" class="control-container">
       <div class="selection-mode-container">
         <span>按照</span>
         <button v-for="option of selectionModeOptions" :key="option.value"
           :class="selectionMode === option.value ? 'selected' : ''" @click="switchSelectionMode(option.value)">{{
-      option.label }}</button>
+        option.label }}</button>
         <span>的图片选择模式，已选择</span>
         <strong>{{ selectedImageIds.length }}</strong>
         <span>项</span>
