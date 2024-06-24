@@ -54,4 +54,8 @@ export class ImageService {
   async delete(id: string): Promise<ItemImage> {
     return this.imageModel.findByIdAndDelete(id);
   }
+
+  async deleteMany(ids: string[]): Promise<void> {
+    await this.imageModel.deleteMany({ _id: { $in: ids } }).exec();
+  }
 }

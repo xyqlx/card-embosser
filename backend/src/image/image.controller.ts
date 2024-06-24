@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -12,6 +13,7 @@ import { ImageService } from './image.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { createReadStream } from 'fs';
 import { Response } from 'express';
+import { ImageIdsDto } from './image-ids.dto';
 
 @Controller('image')
 export class ImageController {
@@ -24,6 +26,7 @@ export class ImageController {
     const contentType = 'image/jpeg';
     res.setHeader('Content-Type', contentType);
     res.write(thumbnailData);
+    res.end();
   }
 
   @Get(':id')
@@ -33,6 +36,7 @@ export class ImageController {
     const contentType = image.contentType;
     res.setHeader('Content-Type', contentType);
     res.write(imageData);
+    res.end();
   }
 
   @Get('used/:id')
@@ -71,6 +75,11 @@ export class ImageController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.imageService.delete(id);
+  }
+
+  @Delete()
+  deleteMany(@Body() imageIds: ImageIdsDto) {
+    return this.imageService.deleteMany(imageIds.imageIds);
   }
 
   @Post()

@@ -60,7 +60,7 @@ async function upload($event: Event) {
   // 上传文件
   const formData = new FormData();
   compressed.forEach((file, index) => {
-    formData.append("file", file, files[index].name);
+    formData.append("image", file, files[index].name);
     formData.append("thumbnail", thumbnails[index], files[index].name);
   });
   fetch("/api/image", {
@@ -72,7 +72,7 @@ async function upload($event: Event) {
 
 <template>
   <div class="main-container">
-    <input v-show="false" type="file" accept="image/*" @change="upload" ref="uploadInput" />
+    <input v-show="false" type="file" accept="image/*" @change="upload" multiple ref="uploadInput" />
     <input v-show="false" type="file" accept="image/*" @change="upload" capture="environment" ref="shotInput" />
     <div class="button-container">
       <button @click="triggerUpload">上传</button>
@@ -109,10 +109,17 @@ async function upload($event: Event) {
   min-height: calc(60vh - 100px - 3em);
 }
 
+.image-container img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .button-container button {
   margin-left: 10px;
   margin-right: 10px;
   font-size: 3em;
   width: calc(50% - 20px);
+  color: var(--color-text);
+  background-color: var(--color-background);
 }
 </style>
