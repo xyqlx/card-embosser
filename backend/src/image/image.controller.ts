@@ -25,6 +25,8 @@ export class ImageController {
     const thumbnailData = image.thumbnail;
     const contentType = 'image/jpeg';
     res.setHeader('Content-Type', contentType);
+    // append 'thumbnail' to raw file name
+    res.setHeader('Content-Disposition', `filename=${id}-thumbnail.jpg`);
     res.write(thumbnailData);
     res.end();
   }
