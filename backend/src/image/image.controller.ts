@@ -11,9 +11,8 @@ import {
 } from '@nestjs/common';
 import { ImageService } from './image.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { createReadStream } from 'fs';
 import { Response } from 'express';
-import { ImageIdsDto } from './image-ids.dto';
+import { ImageIdsDto } from './image-Ids.dto';
 
 @Controller('image')
 export class ImageController {
