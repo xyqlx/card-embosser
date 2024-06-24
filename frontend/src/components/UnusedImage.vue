@@ -19,7 +19,7 @@ function switchSelectionMode(mode: SelectionMode) {
 }
 const selectedImageIds = ref<string[]>([]);
 // expose selectedImageIds to the outside
-defineExpose({ selectedImageIds });
+defineExpose({ selectedImageIds, refresh });
 
 function selectImage(imageId: string) {
   if (selectionMode.value === SelectionMode.Single) {
@@ -76,8 +76,16 @@ async function fetchImages() {
   isLoading.value = false;
 }
 
-onMounted(async () => {
+async function refresh() {
   await fetchImages();
+  // default choose the first image
+  if (imageIds.value.length > 0) {
+    selectedImageIds.value = [imageIds.value[0]];
+  }
+}
+
+onMounted(async () => {
+  await refresh();
 });
 </script>
 

@@ -7,6 +7,7 @@ import { RouterLink, RouterView } from 'vue-router'
     <nav>
       <RouterLink to="/upload">图片录入</RouterLink>
       <RouterLink to="/label">标注</RouterLink>
+      <RouterLink to="/item">查看物品</RouterLink>
       <RouterLink to="/about">关于本站</RouterLink>
     </nav>
   </header>

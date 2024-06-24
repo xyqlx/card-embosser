@@ -41,6 +41,10 @@ export class ImageService {
     return this.imageModel.findByIdAndUpdate(id, { used }, { new: true });
   }
 
+  async setUsedMany(ids: string[], used: boolean): Promise<void> {
+    await this.imageModel.updateMany({ _id: { $in: ids } }, { used }).exec();
+  }
+
   async getUnused(count: number, asc: boolean): Promise<ItemImage[]> {
     return this.imageModel
       .find({ used: false })

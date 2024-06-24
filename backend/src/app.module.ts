@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ImageModule } from './image/image.module';
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ImageModule } from './image/image.module';
       authSource: 'admin',
     }),
     ImageModule,
+    ItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],
