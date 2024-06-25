@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
-const maxItemNumber = 10;
+const maxItemNumber = 50;
 class Item {
   _id: string = '';
   itemId: number = 0;
@@ -13,12 +13,6 @@ class Item {
   }[] = [];
 }
 const items = ref<Item[]>([]);
-async function releaseItem(item: Item) {
-  await fetch(`/api/item/${item._id}`, {
-    method: 'DELETE',
-  });
-  await fetchItems();
-}
 async function fetchItems() {
   isLoading.value = true;
   const response = await fetch(`/api/item/latest/${maxItemNumber}`);
@@ -139,7 +133,7 @@ onMounted(async () => {
         :class="selectedItemIds.includes(item._id) ? 'selected' : ''">
         <div class="position">{{ item.records[item.records.length - 1].position }}</div>
         <img :src="item.images.length === 0 ? '' : '/api/image/thumbnail/' + item.images[0]" :alt="item.description"
-          @click="selectItem(item._id)">
+          @click="selectItem(item._id)" loading="lazy">
         <div class="mask"></div>
       </div>
     </div>
@@ -207,6 +201,8 @@ onMounted(async () => {
 
 .item-container img {
   max-width: min(300px, calc(33vw - 26px));
+  min-height: 128px;
+  min-width: 50px
 }
 
 .item-container .position {
