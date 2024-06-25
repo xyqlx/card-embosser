@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
-const maxImageNumber = 10;
+const maxImageNumber = 100;
 const imageIds = ref<string[]>([]);
 enum SelectionMode {
   Single,

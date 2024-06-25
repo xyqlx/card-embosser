@@ -131,7 +131,7 @@ onMounted(async () => {
     <div class="items-container">
       <div v-for="item of items" :key="item._id" class="item-container"
         :class="selectedItemIds.includes(item._id) ? 'selected' : ''">
-        <div class="position">{{ item.records[item.records.length - 1].position }}</div>
+        <div class="title">{{ item.itemId }}@{{ item.records[item.records.length - 1].position }}</div>
         <img :src="item.images.length === 0 ? '' : '/api/image/thumbnail/' + item.images[0]" :alt="item.description"
           @click="selectItem(item._id)" loading="lazy">
         <div class="mask"></div>
@@ -205,7 +205,7 @@ onMounted(async () => {
   min-width: 50px
 }
 
-.item-container .position {
+.item-container .title {
   position: absolute;
   top: 0;
   left: 0;
