@@ -9,7 +9,15 @@ const emit = defineEmits(['submit']);
 // form model
 const position = ref('');
 const description = ref('');
+async function pressEnter(event: KeyboardEvent) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    await submit();
+  }
+}
 async function submit() {
+  // 处理多行postion
+  const records = position.value.split('\n').map((position) => ({ time: new Date().toISOString(), position }));
   await fetch('/api/item', {
     method: 'POST',
     headers: {
@@ -17,12 +25,7 @@ async function submit() {
     },
     body: JSON.stringify({
       images: selectedImageIds?.value ?? [],
-      records: [
-        {
-          time: new Date().toISOString(),
-          position: position.value,
-        },
-      ],
+      records: records,
       description: description.value,
     }),
   });
@@ -42,11 +45,11 @@ onMounted(async () => {
     <form>
       <p>
         <label for="position">记录位置</label>
-        <input type="text" id="position" name="position" v-model="position"/>
+        <textarea type="text" id="position" name="position" :rows="3" v-model="position"></textarea>
       </p>
       <p>
-        <label for="description">描述或者写点什么</label>
-        <textarea name="description" id="description" rows="3" v-model="description" @keydown.enter="submit"></textarea>
+        <label for="description">描述或者写点什么（按下回车提交）</label>
+        <textarea name="description" id="description" rows="3" v-model="description" @keydown.enter="pressEnter"></textarea>
       </p>
       <button type="submit"  @click.prevent="submit">提交</button>
     </form>
