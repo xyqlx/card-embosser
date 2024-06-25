@@ -110,6 +110,7 @@ onMounted(async () => {
       </div>
       <div class="command-container">
         <span>操作：</span>
+        <button @click="refresh">刷新</button>
         <button @click="deleteImages">删除</button>
       </div>
     </div>
