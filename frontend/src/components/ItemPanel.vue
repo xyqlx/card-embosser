@@ -100,6 +100,33 @@ async function refresh() {
   }
 }
 
+async function addRecord() {
+  const position = prompt('请输入新的位置');
+  if (position === null) {
+    return;
+  }
+  if (position === '') {
+    alert('位置不能为空');
+    return;
+  }
+  const ids = selectedItemIds.value;
+  const records = [{
+    time: new Date().toISOString(),
+    position,
+  }]
+  await fetch(`/api/item/record`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      ids,
+      records,
+    }),
+  });
+  await refresh();
+}
+
 onMounted(async () => {
   await refresh();
 });
@@ -129,6 +156,7 @@ onMounted(async () => {
       <div class="command-container">
         <span>操作：</span>
         <button @click="refresh">刷新</button>
+        <button @click="addRecord">转移位置</button>
         <button @click="deleteItems" :disabled="selectedItemIds.length === 0">删除</button>
       </div>
     </div>

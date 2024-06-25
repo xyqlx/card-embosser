@@ -85,6 +85,13 @@ export class ItemService {
     await this.itemModel.deleteMany({ _id: { $in: ids } }).exec();
   }
 
+  async addRecords(ids: string[], records: { time: Date; position: string }[]) {
+    await this.itemModel.updateMany(
+      { _id: { $in: ids } },
+      { $push: { records: { $each: records } } },
+    );
+  }
+
   async findLastPosition(): Promise<string> {
     const items = await this.itemModel
       .find()

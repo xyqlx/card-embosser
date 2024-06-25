@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './create-item.dto';
 import { ItemIdsDto } from './item-Ids.dto';
+import { AddRecordDto } from './add-record.dto';
 
 @Controller('item')
 export class ItemController {
@@ -27,8 +28,14 @@ export class ItemController {
     return this.itemService.deleteMany(ids.ids);
   }
 
-  @Get('/last-position')
+  @Get('last-position')
   async findLastPosition() {
     return this.itemService.findLastPosition();
+  }
+
+  // add record to any items
+  @Post('record')
+  async addRecord(@Body() doc: AddRecordDto) {
+    return this.itemService.addRecords(doc.ids, doc.records);
   }
 }
