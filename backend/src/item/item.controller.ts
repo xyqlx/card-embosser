@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './create-item.dto';
+import { ItemIdsDto } from './item-Ids.dto';
 
 @Controller('item')
 export class ItemController {
@@ -19,6 +20,11 @@ export class ItemController {
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.itemService.delete(id);
+  }
+
+  @Delete()
+  async deleteMany(@Body() ids: ItemIdsDto) {
+    return this.itemService.deleteMany(ids.ids);
   }
 
   @Get('/last-position')

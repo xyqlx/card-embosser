@@ -1,8 +1,33 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
-const maxImageNumber = 10;
-const imageIds = ref<string[]>([]);
+const maxItemNumber = 10;
+class Item {
+  _id: string = '';
+  itemId: number = 0;
+  images: string[] = [];
+  description: string = '';
+  records: {
+    time: Date;
+    position: string;
+  }[] = [];
+}
+const items = ref<Item[]>([]);
+async function releaseItem(item: Item) {
+  await fetch(`/api/item/${item._id}`, {
+    method: 'DELETE',
+  });
+  await fetchItems();
+}
+async function fetchItems() {
+  isLoading.value = true;
+  const response = await fetch(`/api/item/latest/${maxItemNumber}`);
+  items.value = await response.json();
+  isLoading.value = false;
+}
+onMounted(async () => {
+  await fetchItems();
+});
 enum SelectionMode {
   Single,
   FromBeginning,
@@ -17,70 +42,61 @@ const selectionModeOptions = [
 function switchSelectionMode(mode: SelectionMode) {
   selectionMode.value = mode;
 }
-const selectedImageIds = ref<string[]>([]);
+const selectedItemIds = ref<string[]>([]);
 // expose selectedImageIds to the outside
-defineExpose({ selectedImageIds, refresh });
+defineExpose({ selectedImageIds: selectedItemIds, refresh });
 
-function selectImage(imageId: string) {
+function selectItem(id: string) {
   if (selectionMode.value === SelectionMode.Single) {
-    if (selectedImageIds.value.length === 1 && selectedImageIds.value[0] === imageId) {
-      selectedImageIds.value = [];
+    if (selectedItemIds.value.length === 1 && selectedItemIds.value[0] === id) {
+      selectedItemIds.value = [];
     } else {
-      selectedImageIds.value = [imageId];
+      selectedItemIds.value = [id];
     }
   } else if (selectionMode.value === SelectionMode.FromBeginning) {
-    const index = imageIds.value.indexOf(imageId);
+    const index = items.value.findIndex((item) => item._id === id);
     // check if the images are already selected
-    if (selectedImageIds.value.length === index + 1
-      && selectedImageIds.value.every((id, i) => imageIds.value[i] === id)) {
-      selectedImageIds.value = [];
+    if (selectedItemIds.value.length === index + 1
+      && selectedItemIds.value.every((id, i) => items.value[i]._id === id)) {
+      selectedItemIds.value = [];
     }
     else {
-      selectedImageIds.value = imageIds.value.slice(0, index + 1);
-
+      selectedItemIds.value = items.value.map(x=>x._id).slice(0, index + 1);
     }
   } else if (selectionMode.value === SelectionMode.Multiple) {
-    if (selectedImageIds.value.includes(imageId)) {
-      selectedImageIds.value = selectedImageIds.value.filter((id) => id !== imageId);
+    if (selectedItemIds.value.includes(id)) {
+      selectedItemIds.value = selectedItemIds.value.filter((id) => id !== id);
     } else {
-      selectedImageIds.value = [...selectedImageIds.value, imageId];
+      selectedItemIds.value = [...selectedItemIds.value, id];
     }
   }
 }
 
-function deleteImages() {
-  if (selectedImageIds.value.length === 0) {
+function deleteItems() {
+  if (selectedItemIds.value.length === 0) {
     return;
   }
-  fetch(`/api/image`, {
+  fetch(`/api/item`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      imageIds: selectedImageIds.value
+      ids: selectedItemIds.value
     }),
   }).then(() => {
-    selectedImageIds.value = [];
-    fetchImages();
+    selectedItemIds.value = [];
+    fetchItems();
   });
 }
 
 const isLoading = ref(false);
 
-async function fetchImages() {
-  isLoading.value = true;
-  const response = await fetch(`/api/image/unused/desc/${maxImageNumber}`);
-  const data = await response.json();
-  imageIds.value = data.map((document: any) => document._id);
-  isLoading.value = false;
-}
-
 async function refresh() {
-  await fetchImages();
-  // default choose the first image
-  if (imageIds.value.length > 0) {
-    selectedImageIds.value = [imageIds.value[0]];
+  await fetchItems();
+  // default choose the first item
+  if (items.value.length > 0) {
+    selectedItemIds.value = [items.value[0]._id];
   }
 }
 
@@ -91,10 +107,12 @@ onMounted(async () => {
 
 <template>
   <div class="main-container">
-    <div class="images-container">
-      <div v-for="imageId of imageIds" :key="imageId" class="image-container"
-        :class="selectedImageIds.includes(imageId) ? 'selected' : ''">
-        <img :src="'/api/image/thumbnail/' + imageId" :alt="imageId" @click="selectImage(imageId)">
+    <div class="items-container">
+      <div v-for="item of items" :key="item._id" class="item-container"
+        :class="selectedItemIds.includes(item._id) ? 'selected' : ''">
+        <div class="position">{{ item.records[item.records.length - 1].position }}</div>
+        <img :src="item.images.length === 0 ? '' : '/api/image/thumbnail/' + item.images[0]" :alt="item.description"
+          @click="selectItem(item._id)">
         <div class="mask"></div>
       </div>
     </div>
@@ -104,14 +122,14 @@ onMounted(async () => {
         <button v-for="option of selectionModeOptions" :key="option.value"
           :class="selectionMode === option.value ? 'selected' : ''" @click="switchSelectionMode(option.value)">{{
         option.label }}</button>
-        <span>的图片选择模式，已选择</span>
-        <strong>{{ selectedImageIds.length }}</strong>
+        <span>的选择模式，已选择</span>
+        <strong>{{ selectedItemIds.length }}</strong>
         <span>项</span>
       </div>
       <div class="command-container">
         <span>操作：</span>
         <button @click="refresh">刷新</button>
-        <button @click="deleteImages" :disabled="selectedImageIds.length === 0">删除</button>
+        <button @click="deleteItems" :disabled="selectedItemIds.length === 0">删除</button>
       </div>
     </div>
   </div>
@@ -129,25 +147,25 @@ onMounted(async () => {
   height: 200px;
 }
 
-.images-container {
+.items-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   padding: 20px;
 }
 
-.image-container {
+.item-container {
   position: relative;
   border: 1px solid var(--color-border);
   cursor: pointer;
 }
 
-.image-container.selected {
+.item-container.selected {
   border-color: var(--color-primary);
   border-style: dashed;
 }
 
-.image-container.selected .mask {
+.item-container.selected .mask {
   position: absolute;
   top: 0;
   left: 0;
@@ -159,8 +177,17 @@ onMounted(async () => {
   pointer-events: none;
 }
 
-.image-container img {
+.item-container img {
   max-width: min(300px, calc(33vw - 26px));
+}
+
+.item-container .position {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
 }
 
 .selection-mode-container {

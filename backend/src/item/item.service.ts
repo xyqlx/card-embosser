@@ -72,6 +72,19 @@ export class ItemService {
     return this.itemModel.findByIdAndDelete(id);
   }
 
+  async deleteMany(ids: string[]): Promise<void> {
+    // release all images used by the items
+    const items = await this.itemModel.find({ _id: { $in: ids } });
+    const imageIds = items.reduce((acc, cur) => {
+      if (cur.images) {
+        acc.push(...cur.images);
+      }
+      return acc;
+    }, []);
+    await this.imageService.setUsedMany(imageIds, false);
+    await this.itemModel.deleteMany({ _id: { $in: ids } }).exec();
+  }
+
   async findLastPosition(): Promise<string> {
     const items = await this.itemModel
       .find()
