@@ -27,7 +27,7 @@ enum SelectionMode {
   FromBeginning,
   Multiple,
 }
-const selectionMode = ref<SelectionMode>(SelectionMode.FromBeginning);
+const selectionMode = ref<SelectionMode>(SelectionMode.Single);
 const selectionModeOptions = [
   { value: SelectionMode.Single, label: "单选" },
   { value: SelectionMode.FromBeginning, label: "从头开始" },
