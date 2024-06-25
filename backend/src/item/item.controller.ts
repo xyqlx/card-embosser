@@ -14,7 +14,7 @@ export class ItemController {
   }
 
   @Get('/latest/:count')
-  async findLatest(@Body() count: number) {
+  async findLatest(@Param('count') count: number) {
     return this.itemService.findLatest(count);
   }
 

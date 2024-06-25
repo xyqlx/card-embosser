@@ -34,7 +34,8 @@ export class ItemService {
   }
 
   async findLatest(count: number): Promise<Item[]> {
-    return this.itemModel.find().sort({ createdAt: -1 }).limit(count).exec();
+    // find the latest items
+    return this.itemModel.find().sort({ _id: -1 }).limit(count).exec();
   }
 
   async findByDescription(text: string): Promise<Item[]> {
@@ -98,8 +99,10 @@ export class ItemService {
       .sort({ 'records.time': -1 })
       .limit(1)
       .exec();
-    return items.length > 0
-      ? items[0].records[items[0].records.length - 1].position
-      : '';
+    // join with new line
+    if (items.length === 0) {
+      return '';
+    }
+    return items[0].records.map((record) => record.position).join('\n');
   }
 }
