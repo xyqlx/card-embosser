@@ -59,7 +59,7 @@ function selectItem(id: string) {
     }
   } else if (selectionMode.value === SelectionMode.Multiple) {
     if (selectedItemIds.value.includes(id)) {
-      selectedItemIds.value = selectedItemIds.value.filter((id) => id !== id);
+      selectedItemIds.value = selectedItemIds.value.filter((x) => x !== id);
     } else {
       selectedItemIds.value = [...selectedItemIds.value, id];
     }
