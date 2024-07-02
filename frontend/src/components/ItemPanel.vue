@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
-const maxItemNumber = 50;
+const maxItemNumber = 500;
 class Item {
   _id: string = '';
   itemId: number = 0;
@@ -55,7 +55,7 @@ function selectItem(id: string) {
       selectedItemIds.value = [];
     }
     else {
-      selectedItemIds.value = items.value.map(x=>x._id).slice(0, index + 1);
+      selectedItemIds.value = items.value.map(x => x._id).slice(0, index + 1);
     }
   } else if (selectionMode.value === SelectionMode.Multiple) {
     if (selectedItemIds.value.includes(id)) {
@@ -77,6 +77,31 @@ function deleteItems() {
     },
     body: JSON.stringify({
       ids: selectedItemIds.value
+    }),
+  }).then(() => {
+    selectedItemIds.value = [];
+    fetchItems();
+  });
+}
+
+function modifyPosition() {
+  const position = prompt('请输入新的位置');
+  if (position === null) {
+    return;
+  }
+  if (position === '') {
+    alert('位置不能为空');
+    return;
+  }
+  const ids = selectedItemIds.value;
+  fetch(`/api/item/modify-position`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      ids,
+      position,
     }),
   }).then(() => {
     selectedItemIds.value = [];
@@ -128,6 +153,24 @@ onMounted(async () => {
 
 <template>
   <div class="main-container">
+    <div v-show="!isLoading" class="control-container">
+      <div class="selection-mode-container">
+        <span>按照</span>
+        <button v-for="option of selectionModeOptions" :key="option.value"
+          :class="selectionMode === option.value ? 'selected' : ''" @click="switchSelectionMode(option.value)">{{
+      option.label }}</button>
+        <span>的选择模式，已选择</span>
+        <strong>{{ selectedItemIds.length }}</strong>
+        <span>项</span>
+      </div>
+      <div class="command-container">
+        <span>操作：</span>
+        <button @click="refresh">刷新</button>
+        <button @click="addRecord">转移位置</button>
+        <button @click="modifyPosition">位置修正</button>
+        <button @click="deleteItems" :disabled="selectedItemIds.length === 0">删除</button>
+      </div>
+    </div>
     <div class="items-container">
       <div v-for="item of items" :key="item._id" class="item-container"
         :class="selectedItemIds.includes(item._id) ? 'selected' : ''">
@@ -137,29 +180,13 @@ onMounted(async () => {
         <div class="mask"></div>
       </div>
     </div>
-    <div v-show="!isLoading" class="control-container">
-      <div class="selection-mode-container">
-        <span>按照</span>
-        <button v-for="option of selectionModeOptions" :key="option.value"
-          :class="selectionMode === option.value ? 'selected' : ''" @click="switchSelectionMode(option.value)">{{
-        option.label }}</button>
-        <span>的选择模式，已选择</span>
-        <strong>{{ selectedItemIds.length }}</strong>
-        <span>项</span>
-      </div>
-      <div class="command-container">
-        <span>操作：</span>
-        <button @click="refresh">刷新</button>
-        <button @click="addRecord">转移位置</button>
-        <button @click="deleteItems" :disabled="selectedItemIds.length === 0">删除</button>
-      </div>
-    </div>
   </div>
 </template>
 
 <style scoped>
 .main-container {
   border: 1px solid var(--color-border);
+  padding-top: 10px;
 }
 
 .empty-tips {
@@ -202,7 +229,7 @@ onMounted(async () => {
 .item-container img {
   max-width: min(300px, calc(33vw - 26px));
   min-height: 128px;
-  min-width: 50px
+  min-width: 100px
 }
 
 .item-container .title {
@@ -212,6 +239,7 @@ onMounted(async () => {
   padding: 5px;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
+  pointer-events: none;
 }
 
 .selection-mode-container {

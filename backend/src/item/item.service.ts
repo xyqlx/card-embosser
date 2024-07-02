@@ -4,6 +4,7 @@ import { Item } from './item.schema';
 import { Model } from 'mongoose';
 import { CreateItem } from './create-item.schema';
 import { ImageService } from 'src/image/image.service';
+import { ExplainVerbosity } from 'mongodb';
 
 @Injectable()
 export class ItemService {
@@ -104,5 +105,22 @@ export class ItemService {
       return '';
     }
     return items[0].records.map((record) => record.position).join('\n');
+  }
+
+  async modifyPosition(ids: string[], position: string): Promise<void> {
+    // find and then update the position of last element in record array
+    const items = await this.itemModel.find({ _id: { $in: ids } });
+    const updateActions = items.map((item) => {
+      const lastRecord = item.records[item.records.length - 1];
+      lastRecord.position = position;
+      return {
+        updateOne: {
+          filter: { _id: item._id },
+          update: { records: item.records },
+        },
+      };
+    });
+    await this.itemModel.bulkWrite(updateActions);
+    // I don't know why save of bulkSave not work
   }
 }
